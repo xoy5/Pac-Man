@@ -29,10 +29,10 @@ Game::Game(MainWindow& wnd)
 	gfx(wnd),
 	playerController(&wnd.kbd),
 	pacMan(maze, &playerController),
-	ghost1(Ghost::ColorType::Red, maze, &playerController, &pacMan),
 	botController1(BotController::Behavior::Wander, &maze, &pacMan),
-	ghost2(Ghost::ColorType::Blue, maze, &playerController, &pacMan),
-	botController2(BotController::Behavior::Pursuit, &maze, &pacMan)
+	ghost1(Ghost::ColorType::Red, maze, &botController1, &pacMan),
+	botController2(BotController::Behavior::Pursuit, &maze, &pacMan),
+	ghost2(Ghost::Type::Blue, maze, &botController2, &pacMan)
 {
 	myMessageBox.SetButtons(MyMessageBox::Buttons::Ok);
 	myMessageBox.SetText("Error");
@@ -85,8 +85,8 @@ void Game::ProcessInput()
 	if (flagGameEnd == false)
 	{
 		pacMan.SetMoveDirection(maze);
-		//ghost1.SetMoveDirection(maze);
-		//ghost2.SetMoveDirection(maze);
+		ghost1.SetMoveDirection(maze);
+		ghost2.SetMoveDirection(maze);
 	}
 	///////////////////////////////////////
 	///////////////////////////////////////
@@ -118,6 +118,8 @@ void Game::UpdateModel(float dt)
 	if (flagGameEnd == false)
 	{
 		pacMan.Update(dt, maze);
+		ghost1.Update(dt, maze);
+		ghost2.Update(dt, maze);
 	}
 }
 
@@ -126,8 +128,7 @@ void Game::ComposeFrame()
 	maze.Draw(gfx);
 	pacMan.Draw(gfx);
 	ghost1.Draw(gfx);
-	//ghost2.Draw(gfx);
-	//fontXs.DrawText(pacMan.Get, Vei2{ 10, 30 }, Colors::White, gfx);
+	ghost2.Draw(gfx);
 	
 
 	// Draw FPS

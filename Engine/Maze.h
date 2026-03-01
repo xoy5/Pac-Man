@@ -94,6 +94,9 @@ private:
 				break;
 			case 'S':
 				tiles[i] = Tile{ Tile::Type::PacManSpawn, &spriteTiles };
+				break;
+			default:
+				tiles[i] = Tile{ Tile::Type::Floor, &spriteTiles };
 			}
 			i++;
 		}
@@ -112,8 +115,8 @@ private:
 
 private:
 	static constexpr int tileSize = GridUtils::tileSize;
-	static constexpr int nTilesX = 20;
-	static constexpr int nTilesY = 15;
+	static constexpr int nTilesX = 19;
+	static constexpr int nTilesY = 25;
 	static constexpr int nTiles = nTilesX * nTilesY;
 
 	Tile tiles[nTilesX * nTilesY];
