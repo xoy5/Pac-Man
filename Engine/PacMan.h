@@ -27,11 +27,11 @@ public:
 		if (inputMoveDirection == DirectionUtils::MoveDirection::None) return;
 
 		// Handle instantaneous 180-degree turns
-		if (DirectionUtils::IsOpposite(curMoveDirection, nextMoveDirection))
+		if (DirectionUtils::IsOpposite(inputMoveDirection, curMoveDirection))
 		{
 			gridPos = MazeCharacter::GetNextGridPos();
 			curMoveDirection = inputMoveDirection;
-			//nextMoveDirection = DirectionUtils::MoveDirection::None;
+			nextMoveDirection = DirectionUtils::MoveDirection::None;
 			return;
 		}
 
