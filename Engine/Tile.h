@@ -28,7 +28,7 @@ public:
 		switch (type)
 		{
 		case Type::Floor:
-			gfx.DrawSprite(gridPos.x * size, gridPos.y * size, rectSpriteTileFloor, *sprite, SpriteEffect::Copy{});
+			gfx.DrawSprite(gridPos.x * size , gridPos.y * size, rectSpriteTileFloor, *sprite, SpriteEffect::Copy{});
 			break;
 		case Type::Wall:
 			gfx.DrawSprite(gridPos.x * size, gridPos.y * size, rectSpriteTileWall, *sprite, SpriteEffect::Copy{});
@@ -49,6 +49,6 @@ public:
 private:
 	Type type;
 	const Surface* sprite;
-	static constexpr RectI rectSpriteTileFloor = {};
-	static constexpr RectI rectSpriteTileWall = {};
+	static constexpr RectI rectSpriteTileFloor = { GridUtils::tileSize * 0, GridUtils::tileSize * 1, GridUtils::tileSize * 0, GridUtils::tileSize * 1 };
+	static constexpr RectI rectSpriteTileWall = { GridUtils::tileSize * 1, GridUtils::tileSize * 2, GridUtils::tileSize * 0, GridUtils::tileSize * 1 };
 };

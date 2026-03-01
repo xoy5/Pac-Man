@@ -1,8 +1,9 @@
 #pragma once
-#include <string.h>
+#include <string>
 
-#include "Animation.h"
+#include "Graphics.h"
 #include "Vec2.h"
+#include "Animation.h"
 
 class Character
 {

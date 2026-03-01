@@ -183,6 +183,8 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="DirectionUtils.cpp" />
+    <ClCompile Include="GridUtils.cpp" />
     <ClCompile Include="MazeCharacter.cpp" />
     <ClCompile Include="COMInitializer.cpp" />
     <ClCompile Include="DXErr.cpp" />

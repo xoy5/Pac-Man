@@ -31,11 +31,11 @@ public:
 public:
 	bool CanEnter(GridUtils::GridPos gridPos) const
 	{
-		return GetTileAt(gridPos).GetType() == Tile::Type::Floor;
+		return GetTileAt(gridPos).GetType() != Tile::Type::Wall;
 	}
 	GridUtils::GridPos GetGridPos(int i) const
 	{
-		return GridUtils::GridPos{ nTilesX % i, nTilesY / i };
+		return GridUtils::GridPos{ i % nTilesX, i / nTilesX };
 	}
 	Vec2 GetPosOfTileAt(GridUtils::GridPos gridPos) const
 	{
@@ -92,6 +92,8 @@ private:
 			case 'F':
 				tiles[i] = Tile{ Tile::Type::Floor, &spriteTiles };
 				break;
+			case 'S':
+				tiles[i] = Tile{ Tile::Type::PacManSpawn, &spriteTiles };
 			}
 			i++;
 		}

@@ -79,11 +79,14 @@ void Game::ProcessInput()
 	{
 		const char character = wnd.kbd.ReadChar();
 	}
+
 	///////////////////////////////////////
 	/////////////// MOVEMENT //////////////
 	if (flagGameEnd == false)
 	{
-		
+		pacMan.SetMoveDirection(maze);
+		//ghost1.SetMoveDirection(maze);
+		//ghost2.SetMoveDirection(maze);
 	}
 	///////////////////////////////////////
 	///////////////////////////////////////
@@ -114,20 +117,18 @@ void Game::UpdateModel(float dt)
 {
 	if (flagGameEnd == false)
 	{
-		
+		pacMan.Update(dt, maze);
 	}
 }
 
 void Game::ComposeFrame()
 {
 	maze.Draw(gfx);
-
-	// DEBUG
-	//maze.DrawTileHighlightAt(gfx, player.GetTilePos(), Colors::Aqua);
-	//maze.DrawTileHighlightAt(gfx, player.GetNextTilePos(), Colors::PeachPuff);
-	//maze.DrawTileHighlightAt(gfx, enemy.GetTilePos(), Colors::Aqua);
-	//maze.DrawTileHighlightAt(gfx, enemy.GetNextTilePos(), Colors::PeachPuff);
-
+	pacMan.Draw(gfx);
+	ghost1.Draw(gfx);
+	//ghost2.Draw(gfx);
+	//fontXs.DrawText(pacMan.Get, Vei2{ 10, 30 }, Colors::White, gfx);
+	
 
 	// Draw FPS
 	const std::string fpsText = "FPS: " + std::to_string(FPS);

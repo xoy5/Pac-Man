@@ -1,9 +1,10 @@
 #pragma once
 #include "Keyboard.h"
 #include "Vec2.h"
+
+#include "Maze.h"
 #include "DirectionUtils.h"
 #include "GridUtils.h"
-#include "Maze.h"
 
 class MazeCharacter;
 

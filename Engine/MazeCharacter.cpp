@@ -51,7 +51,7 @@ void MazeCharacter::SetMoveDirection(const Maze& maze)
 		}
 	}
 	// Queue the move to be processed at the next tile junction
-	else
+	else if(curMoveDirection != inputMoveDirection)
 	{
 		nextMoveDirection = inputMoveDirection;
 	}

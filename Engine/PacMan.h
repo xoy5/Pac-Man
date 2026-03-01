@@ -31,7 +31,7 @@ public:
 		{
 			gridPos = MazeCharacter::GetNextGridPos();
 			curMoveDirection = inputMoveDirection;
-			nextMoveDirection = DirectionUtils::MoveDirection::None;
+			//nextMoveDirection = DirectionUtils::MoveDirection::None;
 			return;
 		}
 

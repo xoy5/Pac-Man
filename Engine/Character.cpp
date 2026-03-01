@@ -2,7 +2,6 @@
 
 Character::Character(const std::string& spriteFilePath, const Vec2& pos, float speed, int width, int height, int nFrames, float frameHoldTime, bool animationPingPong)
 	:
-	sprite(spriteFilePath),
 	pos(pos),
 	speed(speed),
 	defaultSpeed(speed),
@@ -16,7 +15,9 @@ Character::Character(const Vec2& pos, float speed, int width, int height)
 	:
 	pos(pos),
 	speed(speed),
-	defaultSpeed(speed)
+	defaultSpeed(speed),
+	width(width),
+	height(height)
 {
 }
 
@@ -58,6 +59,7 @@ void Character::ActivateEffect()
 
 void Character::SetSprite(const std::string& spriteFilePath, int nFrames, float frameHoldTime, bool animationPingPong)
 {
+	sprite = Surface(spriteFilePath);
 	for (int i = 0; i < (int)Sequence::StandingLeft; i++)
 	{
 		animations.emplace_back(Animation(width, height * i, width, height, nFrames, &sprite, frameHoldTime, animationPingPong));
