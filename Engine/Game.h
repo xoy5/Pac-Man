@@ -35,8 +35,9 @@
 
 #include "Maze.h"
 #include "MazeCharacter.h"
-#include "Player.h"
-#include "Enemy.h"
+#include "PacMan.h"
+#include "Ghost.h"
+#include "Controller.h"
 
 class Game
 {
@@ -83,10 +84,13 @@ private:
 
 	/********************************/
 	/*  User Variables  */
-	Maze maze;
-	std::vector<MazeCharacter*> mazeCharacters;
-	Player player;
-	Enemy enemy;
 	bool flagGameEnd = false;
+	Maze maze;
+	PlayerController playerController;
+	PacMan pacMan;
+	Ghost ghost1;
+	BotController botController1;
+	Ghost ghost2;
+	BotController botController2;
 	/********************************/
 };

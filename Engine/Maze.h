@@ -6,23 +6,11 @@
 #include "SpriteEffect.h"
 #include "Graphics.h"
 #include "Rect.h"
+#include "Tile.h"
+#include "GridUtils.h"
 
 class Maze
 {
-private:
-	// Tile definitions using bitwise flags.
-	// NOTE: Each tile should be assigned exactly ONE type.
-	// Logic uses bitwise values to simplify collision checking
-	enum class Tile
-	{
-		Undefined = 0,
-		Floor = 1,
-		Entrance = 2,
-		Exit = 4,
-		Cheese = 8,
-		Wall = 16
-	};
-
 public:
 	Maze()
 	{
@@ -34,106 +22,50 @@ public:
 	}
 	void Draw(Graphics& gfx) const
 	{
-		for (int i = 0; i < nTilesX * nTilesY; i++)
+		for (int i = 0; i < nTiles; i++)
 		{
-			const int x = i % nTilesX;
-			const int y = i / nTilesX;
-			const Vec2 posOfTile = GetPosOfTileAt({ x,y });
+			tiles[i].Draw(gfx, GetGridPos(i), tileSize);
+		}
+	}
 
-			switch (tiles[i])
+public:
+	bool CanEnter(GridUtils::GridPos gridPos) const
+	{
+		return GetTileAt(gridPos).GetType() == Tile::Type::Floor;
+	}
+	GridUtils::GridPos GetGridPos(int i) const
+	{
+		return GridUtils::GridPos{ nTilesX % i, nTilesY / i };
+	}
+	Vec2 GetPosOfTileAt(GridUtils::GridPos gridPos) const
+	{
+		return Vec2{ float(gridPos.x * tileSize), float(gridPos.y * tileSize) };
+	}
+	RectF GetRectOfTileAt(GridUtils::GridPos gridPos) const
+	{
+		return RectF(Vec2{ float(gridPos.x * tileSize), float(gridPos.y * tileSize) }, float(tileSize), float(tileSize));
+	}
+	GridUtils::GridPos GetPacManSpawnPointGridPos() const
+	{
+		for (int i = 0; i < nTiles; i++)
+		{
+			if (tiles[i].GetType() == Tile::Type::PacManSpawn)
 			{
-			case Tile::Wall:
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteWall, SpriteEffect::Copy{});
-				break;
-			case Tile::Cheese:
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteFloor, SpriteEffect::Copy{});
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteCheese, SpriteEffect::Chroma{ Colors::Magenta });
-				break;
-			case Tile::Floor:
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteFloor, SpriteEffect::Copy{});
-				break;
-			case Tile::Entrance:
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteFloor, SpriteEffect::Copy{});
-				gfx.DrawTransparentRect(GetRectOfTileAt({ x,y }), Colors::Green);
-				break;
-			case Tile::Exit:
-				gfx.DrawSprite(posOfTile.x, posOfTile.y, spriteFloor, SpriteEffect::Copy{});
-				gfx.DrawTransparentRect(GetRectOfTileAt({ x,y }), Colors::Red);
-				break;
+				return GetGridPos(i);
 			}
 		}
-	}
-	void DrawTileHighlightAt(Graphics& gfx, std::pair<int, int>tilePos, const Color& c) const
-	{
-		const Vec2 posOfTile = GetPosOfTileAt(tilePos);
-		gfx.DrawTransparentRect(RectF{ posOfTile, float(tileSize), float(tileSize) }, c);
-	}
-	bool CheckAndCollectCheese(std::pair<int, int> playerTilePos)
-	{
-		if (int(GetTileAt(playerTilePos)) & int(Tile::Cheese))
-		{
-			SetTileAt(playerTilePos, Tile::Floor);
-			return true;
-		}
-		return false;
-	}
-public:
-	bool CanEnter(std::pair<int, int> tilePos) const
-	{
-		return bool(int(GetTileAt(tilePos)) & 15); // 15 means that I choose Floor, Entrance, Exit and Cheese
-	}
-	std::pair<int, int> GetExitTilePos() const
-	{
-		for (int i = 0; i < nTilesX * nTilesY; i++)
-		{
-			if (int(tiles[i]) & int(Tile::Exit))
-				return { i % nTilesX, i / nTilesX };
-		}
-
-		assert(false && "There is no exit.");
-		return {-1,-1};
-	}
-	std::pair<int, int> GetEntranceTilePos() const
-	{
-		for (int i = 0; i < nTilesX * nTilesY; i++)
-		{
-			if (int(tiles[i]) & int(Tile::Entrance))
-				return { i % nTilesX, i / nTilesX };
-		}
-
-		assert(false && "There is no entrance.");
-		return {-1,-1};
-	}
-	Vec2 GetEntrancePos() const
-	{
-		return GetPosOfTileAt(GetEntranceTilePos());
-	}
-	Vec2 GetPosOfTileAt(std::pair<int, int> tilePos) const
-	{
-		return Vec2{ float(tilePos.first * tileSize), float(tilePos.second * tileSize) };
-	}
-	RectF GetRectOfTileAt(std::pair<int, int> tilePos) const
-	{
-		return RectF(Vec2{ float(tilePos.first * tileSize), float(tilePos.second * tileSize) }, float(tileSize), float(tileSize));
-	}
-	int GetNumberOfCheeses() const
-	{
-		int nOfCheese = 0;
-		for (int i = 0; i < nTilesX * nTilesY; i++)
-		{
-			if (int(tiles[i]) & int(Tile::Cheese)) nOfCheese++;
-		}
-		return nOfCheese;
+		assert(false && "No PacMan spawn point.");
+		return GridUtils::GridPos{ -1,-1 };
 	}
 
 	int GetNumberOfTilesX() const
 	{
 		return nTilesX;
-	};
+	}
 	int GetNumberOfTilesY() const
 	{
 		return nTilesY;
-	};
+	}
 	int GetTileSize() const
 	{
 		return tileSize;
@@ -155,46 +87,33 @@ private:
 				i--;
 				break;
 			case 'W':
-				tiles[i] = Tile::Wall;
-				break;
-			case 'C':
-				tiles[i] = Tile::Cheese;
+				tiles[i] = Tile{ Tile::Type::Wall, &spriteTiles };
 				break;
 			case 'F':
-				tiles[i] = Tile::Floor;
-				break;
-			case 'E':
-				tiles[i] = Tile::Entrance;
-				break;
-			case 'X':
-				tiles[i] = Tile::Exit;
+				tiles[i] = Tile{ Tile::Type::Floor, &spriteTiles };
 				break;
 			}
 			i++;
 		}
 	}
-	Tile GetTileAt(std::pair<int, int> tilePos) const
+	Tile GetTileAt(GridUtils::GridPos gridPos) const
 	{
-		if (!(tilePos.first >= 0 && tilePos.first < nTilesX &&
-			tilePos.second >= 0 && tilePos.second < nTilesY))
-		{
-			return Tile::Undefined;
-		}
+		assert(gridPos.x >= 0 && gridPos.x < nTilesX &&
+			gridPos.y >= 0 && gridPos.y < nTilesY);
 
-		return tiles[tilePos.first + tilePos.second * nTilesX];
+		return tiles[gridPos.y * nTilesX + gridPos.x];
 	}
-	void SetTileAt(std::pair<int, int> tilePos, Tile type)
+	void SetTileAt(GridUtils::GridPos gridPos, Tile tile)
 	{
-		tiles[tilePos.second * nTilesX + tilePos.first] = type;
+		tiles[gridPos.y * nTilesX + gridPos.x] = tile;
 	}
 
 private:
+	static constexpr int tileSize = GridUtils::tileSize;
 	static constexpr int nTilesX = 20;
 	static constexpr int nTilesY = 15;
-	static constexpr int tileSize = 40;
-	Tile tiles[nTilesX * nTilesY];
+	static constexpr int nTiles = nTilesX * nTilesY;
 
-	Surface spriteCheese = Surface{ "Files/Images/Sprites/cheese.bmp" };
-	Surface spriteWall = Surface{ "Files/Images/Sprites/wall.bmp" };
-	Surface spriteFloor = Surface{ "Files/Images/Sprites/floor.bmp" };
+	Tile tiles[nTilesX * nTilesY];
+	Surface spriteTiles = Surface{ "Files/Images/Sprites/tiles.bmp" };
 };

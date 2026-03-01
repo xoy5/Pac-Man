@@ -1,211 +1,89 @@
 #include "MazeCharacter.h"
 
-MazeCharacter::MazeCharacter(const Maze& maze, const std::pair<int, int>& spawnPoint, const std::string& spriteFilePath, float speed, int width, int height, int nFrames, float frameHoldTime, bool animationPingPong, bool canTurnImmediately)
+MazeCharacter::MazeCharacter(const Maze& maze, Controller* pController, const std::string& spriteFilePath, const GridUtils::GridPos& gridPos, float speed, int width, int height, int nFrames, float frameHoldTime, bool animationPingPong)
 	:
-	sprite(spriteFilePath),
-	speed(speed),
-	defaultSpeed(speed),
-	width(width),
-	height(height),
-	movement(maze, spawnPoint, *this),
-	canTurnImmediately(canTurnImmediately)
+	Character(spriteFilePath, maze.GetPosOfTileAt(gridPos), speed, width, height, nFrames, frameHoldTime, animationPingPong),
+	pController(pController),
+	gridPos(gridPos)
 {
-	for (int i = 0; i < (int)Sequence::StandingLeft; i++)
-	{
-		animations.emplace_back(Animation(width, height * i, width, height, nFrames, &sprite, frameHoldTime, animationPingPong));
-	}
-	for (int i = (int)Sequence::StandingLeft; i < (int)Sequence::Count; i++)
-	{
-		animations.emplace_back(Animation(0, height * (i - (int)Sequence::StandingLeft), width, height, 1, &sprite, frameHoldTime));
-	}
+	Character::SetStandingDirection(DirectionUtils::MoveDirectionToVec2(DirectionUtils::MoveDirection::Up));
 }
 
-void MazeCharacter::ResetToDefault(const Maze& maze)
+MazeCharacter::MazeCharacter(const Maze& maze, Controller* pController, const GridUtils::GridPos& gridPos, float speed, int width, int height)
+	:
+	Character(maze.GetPosOfTileAt(gridPos), speed, width, height),
+	pController(pController),
+	gridPos(gridPos)
 {
-	movement.ResetToDefault(maze, *this);
-}
-
-void MazeCharacter::Draw(Graphics& gfx) const
-{
-	// if effect active, draw sprite replacing opaque pixels with red
-	if (effectActive)
-	{
-		animations[(int)iCurSequence].Draw((Vei2)pos, gfx, SpriteEffect::Substitution(Colors::Magenta, Colors::Red));
-	}
-	else
-	{
-		animations[(int)iCurSequence].Draw((Vei2)pos, gfx, SpriteEffect::Chroma{ Colors::Magenta });
-	}
+	Character::SetStandingDirection(DirectionUtils::MoveDirectionToVec2(DirectionUtils::MoveDirection::Up));
 }
 
 void MazeCharacter::Update(float dt, const Maze& maze)
 {
-	movement.Update(dt, maze, *this);
-	animations[(int)iCurSequence].Update(dt);
-	// update effect time if active
-	if (effectActive)
+	Character::SetDirection(DirectionUtils::MoveDirectionToVec2(curMoveDirection));
+	if (curMoveDirection == DirectionUtils::MoveDirection::None) return;
+
+	Character::Update(dt);
+
+	if (IsMovedToNextGridPos(maze))
 	{
-		effectTime += dt;
-		// deactivate effect if duration exceeded
-		if (effectTime >= effectDuration)
-		{
-			effectActive = false;
-		}
+		gridPos = GetNextGridPos();
+		SnapToGrid(maze);
+		ContinueMoveDirection(maze);
 	}
 }
 
-void MazeCharacter::SetAnimationDirection(Vec2 dir)
+void MazeCharacter::SetMoveDirection(const Maze& maze)
 {
-	if (dir.x > 0.0f)
+	DirectionUtils::MoveDirection inputMoveDirection = pController->GetMoveDirection();
+	if (inputMoveDirection == DirectionUtils::MoveDirection::None) return;
+
+	// Immediate move if standing still
+	if (curMoveDirection == DirectionUtils::MoveDirection::None)
 	{
-		iCurSequence = Sequence::WalkingRight;
+		if (maze.CanEnter(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, inputMoveDirection)))
+		{
+			curMoveDirection = inputMoveDirection;
+		}
+		else
+		{
+			Character::SetStandingDirection(DirectionUtils::MoveDirectionToVec2(inputMoveDirection));
+		}
 	}
-	else if (dir.x < 0.0f)
-	{
-		iCurSequence = Sequence::WalkingLeft;
-	}
-	else if (dir.y < 0.0f)
-	{
-		iCurSequence = Sequence::WalkingUp;
-	}
-	else if (dir.y > 0.0f)
-	{
-		iCurSequence = Sequence::WalkingDown;
-	}
+	// Queue the move to be processed at the next tile junction
 	else
 	{
-		if (vel.x > 0.0f)
-		{
-			iCurSequence = Sequence::StandingRight;
-		}
-		else if (vel.x < 0.0f)
-		{
-			iCurSequence = Sequence::StandingLeft;
-		}
-		else if (vel.y < 0.0f)
-		{
-			iCurSequence = Sequence::StandingUp;
-		}
-		else if (vel.y > 0.0f)
-		{
-			iCurSequence = Sequence::StandingDown;
-		}
+		nextMoveDirection = inputMoveDirection;
 	}
 }
 
-void MazeCharacter::ActivateEffect()
+GridUtils::GridPos MazeCharacter::GetNextGridPos() const
 {
-	effectActive = true;
-	effectTime = 0.0f;
+	return GridUtils::GetGridPosBasedOnMoveDirection(gridPos, curMoveDirection);
 }
 
-void MazeCharacter::SetDirection(const Vec2& dir_in)
+void MazeCharacter::SnapToGrid(const Maze& maze)
 {
-	dir = dir_in;
-	SetAnimationDirection(dir);
+	SetPos(maze.GetPosOfTileAt(gridPos));
 }
 
-Vec2 MazeCharacter::GetDirection() const
+bool MazeCharacter::IsMovedToNextGridPos(const Maze& maze) const
 {
-	return dir;
-}
+	const RectF ownerRect = Character::GetRect();
+	const RectF nextTileRect = maze.GetRectOfTileAt(GetNextGridPos());
 
-void MazeCharacter::SetMovementDirection(const Vec2& dir, const Maze& maze)
-{
-	movement.SetDirection(dir, maze, *this);
-}
-
-void MazeCharacter::SetStandingDirection(const Vec2& dir)
-{
-	if (dir.x > 0.0f)
+	switch (curMoveDirection)
 	{
-		iCurSequence = Sequence::StandingRight;
+	case DirectionUtils::MoveDirection::Left:
+		return ownerRect.right <= nextTileRect.right;
+	case DirectionUtils::MoveDirection::Right:
+		return ownerRect.left >= nextTileRect.left;
+	case DirectionUtils::MoveDirection::Up:
+		return ownerRect.bottom <= nextTileRect.bottom;
+	case DirectionUtils::MoveDirection::Down:
+		return ownerRect.top >= nextTileRect.top;
+
+	default:
+		return true;
 	}
-	else if (dir.x < 0.0f)
-	{
-		iCurSequence = Sequence::StandingLeft;
-	}
-	else if (dir.y < 0.0f)
-	{
-		iCurSequence = Sequence::StandingUp;
-	}
-	else if (dir.y > 0.0f)
-	{
-		iCurSequence = Sequence::StandingDown;
-	}
-}
-
-void MazeCharacter::SetPos(const Vec2& pos_in)
-{
-	pos = pos_in;
-}
-
-Vec2 MazeCharacter::GetPos() const
-{
-	return pos;
-}
-
-std::pair<int, int> MazeCharacter::GetTilePos() const
-{
-	return movement.GetTilePos();
-}
-
-std::pair<int, int> MazeCharacter::GetNextTilePos() const
-{
-	return movement.GetNextTilePos();
-}
-
-void MazeCharacter::Translate(const Vec2& translate)
-{
-	pos += translate;
-}
-
-bool MazeCharacter::CanTurnImmediately() const
-{
-	return canTurnImmediately;
-}
-
-int MazeCharacter::GetWidth() const
-{
-	return width;
-}
-
-int MazeCharacter::GetHeight() const
-{
-	return height;
-}
-
-RectF MazeCharacter::GetRect() const
-{
-	return RectF{ pos, float(width), float(height) };
-}
-
-RectF MazeCharacter::GetHitboxRect() const
-{
-	return GetRect();
-}
-
-float MazeCharacter::GetSpeed() const
-{
-	return speed;
-}
-
-void MazeCharacter::SetSpeed(float speed_in)
-{
-	speed = speed_in;
-}
-
-float MazeCharacter::GetDefaultSpeed() const
-{
-	return defaultSpeed;
-}
-
-void MazeCharacter::SetVelocity(Vec2 velocity_in)
-{
-	vel = velocity_in;
-}
-
-Vec2 MazeCharacter::GetVelocity() const
-{
-	return vel;
 }
