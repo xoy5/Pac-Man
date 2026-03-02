@@ -29,10 +29,10 @@ Game::Game(MainWindow& wnd)
 	gfx(wnd),
 	playerController(&wnd.kbd),
 	pacMan(maze, &playerController),
-	botController1(BotController::Behavior::Wander, &maze, &pacMan),
-	ghost1(Ghost::ColorType::Red, maze, &botController1, &pacMan),
-	botController2(BotController::Behavior::Pursuit, &maze, &pacMan),
-	ghost2(Ghost::Type::Blue, maze, &botController2, &pacMan)
+	botController1(BotController::Behavior::Pursuit, &maze, &pacMan),
+	ghost1(Ghost::Identity::Blinky, maze, &botController1, &pacMan),
+	botController2(BotController::Behavior::Wander, &maze, &pacMan),
+	ghost2(Ghost::Identity::Pinky, maze, &botController2, &pacMan)
 {
 	myMessageBox.SetButtons(MyMessageBox::Buttons::Ok);
 	myMessageBox.SetText("Error");
@@ -129,7 +129,6 @@ void Game::ComposeFrame()
 	pacMan.Draw(gfx);
 	ghost1.Draw(gfx);
 	ghost2.Draw(gfx);
-	
 
 	// Draw FPS
 	const std::string fpsText = "FPS: " + std::to_string(FPS);

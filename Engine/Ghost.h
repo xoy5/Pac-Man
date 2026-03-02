@@ -14,25 +14,27 @@
 class Ghost : public MazeCharacter
 {
 public: 
-    enum class ColorType
-    {
-        Red,
-        Blue
-    };
+    enum class Identity { Blinky, Pinky, Inky, Clyde };
 public:
-    Ghost(ColorType color, const Maze& maze, Controller* pController, const MazeCharacter* pTarget)
+    Ghost(Identity color, const Maze& maze, Controller* pController, const MazeCharacter* pTarget)
         :
         MazeCharacter(maze, pController, maze.GetPacManSpawnPointGridPos()/*spawn*/, 105.0f, GridUtils::tileSize, GridUtils::tileSize),
 		pTarget(pTarget),
-        color(color)
+        identity(identity)
 	{
         switch (color)
         {
-        case ColorType::Red:
-            Character::SetSprite("Files/Images/Sprites/ghostRed.bmp", 2, 0.05f);
+        case Identity::Blinky:
+            Character::SetSprite("Files/Images/Sprites/Ghosts/blinky.bmp", 2, 0.05f);
             break;
-        case ColorType::Blue:
-            Character::SetSprite("Files/Images/Sprites/ghostBlue.bmp", 2, 0.05f);
+        case Identity::Pinky:
+            Character::SetSprite("Files/Images/Sprites/Ghosts/pinky.bmp", 2, 0.05f);
+            break;
+        case Identity::Inky:
+            Character::SetSprite("Files/Images/Sprites/Ghosts/inky.bmp", 2, 0.05f);
+            break;
+        case Identity::Clyde:
+            Character::SetSprite("Files/Images/Sprites/Ghosts/clyde.bmp", 2, 0.05f);
             break;
         }
     }
@@ -62,5 +64,5 @@ public:
 
 private:
 	const MazeCharacter* pTarget = nullptr;
-    ColorType color;
+    Identity identity;
 };

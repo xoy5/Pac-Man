@@ -18,7 +18,7 @@ class PacMan : public MazeCharacter
 public:
 	PacMan(const Maze& maze, Controller* pController)
 		:
-		MazeCharacter(maze, pController, "Files/Images/Sprites/ghostRed.bmp", maze.GetPacManSpawnPointGridPos(), 100.0f, GridUtils::tileSize, GridUtils::tileSize, 2, 0.05f)
+		MazeCharacter(maze, pController, "Files/Images/Sprites/Ghosts/clyde.bmp", maze.GetPacManSpawnPointGridPos(), 100.0f, GridUtils::tileSize, GridUtils::tileSize, 2, 0.05f)
 	{
 	}
 	void SetMoveDirection(const Maze& maze) override
