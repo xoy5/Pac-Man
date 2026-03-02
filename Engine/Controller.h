@@ -2,10 +2,10 @@
 #include "Keyboard.h"
 #include "Vec2.h"
 
-#include "Maze.h"
 #include "DirectionUtils.h"
 #include "GridUtils.h"
 
+class Maze;
 class MazeCharacter;
 
 class Controller

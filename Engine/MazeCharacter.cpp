@@ -1,3 +1,4 @@
+#include "Maze.h"
 #include "MazeCharacter.h"
 
 MazeCharacter::MazeCharacter(const Maze& maze, Controller* pController, const std::string& spriteFilePath, const GridUtils::GridPos& gridPos, float speed, int width, int height, int nFrames, float frameHoldTime, bool animationPingPong)

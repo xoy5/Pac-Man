@@ -10,9 +10,17 @@ class Tile
 public:
 	enum class Type
 	{
+		Undefined,
 		Floor,
 		Wall,
-		PacManSpawn
+		Gate,
+		ConnectorL,
+		ConnectorR,
+		PacManSpawn,
+		BlinkySpawn,
+		PinkySpawn,
+		InkySpawn,
+		ClydeSpawn
 	};
 
 public:

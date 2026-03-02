@@ -5,7 +5,6 @@
 #include "Animation.h"
 #include "Vec2.h"
 
-#include "Maze.h"
 #include "GridUtils.h"
 #include "Controller.h"
 #include "DirectionUtils.h"

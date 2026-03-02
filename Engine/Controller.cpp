@@ -1,4 +1,6 @@
 #include "Controller.h"
+
+#include "Maze.h"
 #include "MazeCharacter.h"
 
 PlayerController::PlayerController(const Keyboard* pKbd)
