@@ -57,10 +57,10 @@ public:
 		if (t.GetType() == type) maskNeighbors += tBit;
 		if (b.GetType() == type) maskNeighbors += bBit;
 
-		if (((maskNeighbors & tBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && tL.GetType() == type && tR.GetType() == type) maskNeighbors = tWBit;
-		if (((maskNeighbors & bBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && bL.GetType() == type && bR.GetType() == type) maskNeighbors = bWBit;
-		if (((maskNeighbors & lBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tL.GetType() == type && bL.GetType() == type) maskNeighbors = lWBit;
-		if (((maskNeighbors & rBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tR.GetType() == type && bR.GetType() == type) maskNeighbors = rWBit;
+		if (((maskNeighbors & tBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && tL.GetType() == type && tR.GetType() == type) maskNeighbors = bWBit;
+		if (((maskNeighbors & bBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && bL.GetType() == type && bR.GetType() == type) maskNeighbors = tWBit;
+		if (((maskNeighbors & lBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tL.GetType() == type && bL.GetType() == type) maskNeighbors = rWBit;
+		if (((maskNeighbors & rBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tR.GetType() == type && bR.GetType() == type) maskNeighbors = lWBit;
 	}
 public:
 	void SetType(Type type_in)
