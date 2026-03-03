@@ -57,10 +57,10 @@ public:
 		if (t.GetType() == type) maskNeighbors += tBit;
 		if (b.GetType() == type) maskNeighbors += bBit;
 
-		if (((maskNeighbors & tBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && tL.GetType() == type && tR.GetType() == type) maskNeighbors -= tBit;
-		if (((maskNeighbors & bBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && bL.GetType() == type && bR.GetType() == type) maskNeighbors -= bBit;
-		if (((maskNeighbors & lBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tL.GetType() == type && bL.GetType() == type) maskNeighbors -= lBit;
-		if (((maskNeighbors & rBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tR.GetType() == type && bR.GetType() == type) maskNeighbors -= rBit;
+		if (((maskNeighbors & tBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && tL.GetType() == type && tR.GetType() == type) maskNeighbors = tWBit;
+		if (((maskNeighbors & bBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && bL.GetType() == type && bR.GetType() == type) maskNeighbors = bWBit;
+		if (((maskNeighbors & lBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tL.GetType() == type && bL.GetType() == type) maskNeighbors = lWBit;
+		if (((maskNeighbors & rBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tR.GetType() == type && bR.GetType() == type) maskNeighbors = rWBit;
 	}
 public:
 	void SetType(Type type_in)
@@ -81,6 +81,10 @@ private:
 	static constexpr int rBit = 2;
 	static constexpr int tBit = 4;
 	static constexpr int bBit = 8;
+	static constexpr int lWBit = 16;
+	static constexpr int rWBit = 17;
+	static constexpr int tWBit = 18;
+	static constexpr int bWBit = 19;
 
 	static constexpr RectI rectSpriteTileFloor = { GridUtils::tileSize * 0, GridUtils::tileSize * 1, GridUtils::tileSize * 0, GridUtils::tileSize * 1 };
 };

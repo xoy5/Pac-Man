@@ -18,11 +18,18 @@ public:
 class PlayerController : public Controller
 {
 public:
-	PlayerController(const Keyboard* pKbd);
+	enum class KeyboardControll
+	{
+		WSAD,
+		ARROWS
+	};
+public:
+	PlayerController(const Keyboard* pKbd, KeyboardControll kC);
 	DirectionUtils::MoveDirection GetMoveDirection() const override;
 
 private:
 	const Keyboard* pKbd;
+	KeyboardControll kC;
 };
 
 class BotController : public Controller

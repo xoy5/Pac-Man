@@ -87,6 +87,7 @@ private:
 	bool flagGameEnd = false;
 	Maze maze;
 	PlayerController playerController;
+	PlayerController secondPlayerController;
 	PacMan pacMan;
 	Ghost ghost1;
 	BotController botController1;

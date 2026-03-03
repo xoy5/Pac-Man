@@ -27,10 +27,13 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	playerController(&wnd.kbd),
+	playerController(&wnd.kbd, PlayerController::KeyboardControll::WSAD),
+	secondPlayerController(&wnd.kbd, PlayerController::KeyboardControll::ARROWS),
 	pacMan(maze, &playerController),
+
 	botController1(BotController::Behavior::Pursuit, &maze, &pacMan),
-	ghost1(Ghost::Identity::Blinky, maze, &botController1, &pacMan),
+	ghost1(Ghost::Identity::Blinky, maze,&secondPlayerController, &pacMan),
+
 	botController2(BotController::Behavior::Wander, &maze, &pacMan),
 	ghost2(Ghost::Identity::Pinky, maze, &botController2, &pacMan)
 {
