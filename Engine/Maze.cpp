@@ -131,12 +131,29 @@ void Maze::SetupTiles()
 		}
 		i++;
 	}
+
+	for (int i = 0; i < nTiles; i++)
+	{
+		GridUtils::GridPos gridPos = GetGridPos(i);
+		GridUtils::GridPos gridPosUp = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Up);
+		GridUtils::GridPos gridPosDown = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Down);
+		tiles[i].SetNeighbors(
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Left)),
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Right)),
+			GetTileAt(gridPosUp),
+			GetTileAt(gridPosDown),
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPosUp, DirectionUtils::MoveDirection::Left)),
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPosUp, DirectionUtils::MoveDirection::Right)),
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPosDown, DirectionUtils::MoveDirection::Left)),
+			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPosDown, DirectionUtils::MoveDirection::Right))
+		);
+	}
 }
 
 Tile Maze::GetTileAt(GridUtils::GridPos gridPos) const
 {
-	assert(gridPos.x >= 0 && gridPos.x < nTilesX &&
-		gridPos.y >= 0 && gridPos.y < nTilesY);
+	if (!(gridPos.x >= 0 && gridPos.x < nTilesX && gridPos.y >= 0 && gridPos.y < nTilesY))
+		return Tile(Tile::Type::Undefined, nullptr);
 
 	return tiles[gridPos.y * nTilesX + gridPos.x];
 }

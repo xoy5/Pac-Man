@@ -8,6 +8,7 @@
 #include "Rect.h"
 #include "Tile.h"
 #include "GridUtils.h"
+#include "DirectionUtils.h"
 #include "Ghost.h"
 
 class Maze
@@ -26,13 +27,14 @@ public:
 	int GetNumberOfTilesY() const;
 	Tile GetTileAt(GridUtils::GridPos gridPos) const;
 	void SetTileAt(GridUtils::GridPos gridPos, Tile tile);
+
 private:
 	void SetupTiles();
 
 private:
 	static constexpr int tileSize = GridUtils::tileSize;
 	static constexpr int nTilesX = 19;
-	static constexpr int nTilesY = 25;
+	static constexpr int nTilesY = 22;
 	static constexpr int nTiles = nTilesX * nTilesY;
 
 	Tile tiles[nTilesX * nTilesY];
