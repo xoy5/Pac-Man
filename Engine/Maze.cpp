@@ -137,7 +137,7 @@ void Maze::SetupTiles()
 		GridUtils::GridPos gridPos = GetGridPos(i);
 		GridUtils::GridPos gridPosUp = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Up);
 		GridUtils::GridPos gridPosDown = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Down);
-		tiles[i].SetNeighbors(
+		tiles[i].SetTileIndex(
 			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Left)),
 			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Right)),
 			GetTileAt(gridPosUp),

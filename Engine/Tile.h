@@ -16,6 +16,7 @@ public:
 		Gate,
 		ConnectorL,
 		ConnectorR,
+		Dots,
 		PacManSpawn,
 		BlinkySpawn,
 		PinkySpawn,
@@ -34,33 +35,44 @@ public:
 	}
 	void Draw(Graphics& gfx, const GridUtils::GridPos& gridPos, int size) const
 	{
-		switch (type)
-		{
-		case Type::Floor:
-			gfx.DrawSprite(gridPos.x * size, gridPos.y * size, rectSpriteTileFloor, *sprite, SpriteEffect::Copy{});
-			break;
-		case Type::Wall:
-			gfx.DrawSprite(gridPos.x * size, gridPos.y * size,
-				{
-					(maskNeighbors % nRowSprite) * GridUtils::tileSize,
-					((maskNeighbors % nRowSprite) + 1) * GridUtils::tileSize,
-					(maskNeighbors / nRowSprite) * GridUtils::tileSize,
-					((maskNeighbors / nRowSprite) + 1) * GridUtils::tileSize,
-				}, *sprite, SpriteEffect::Copy{});
-			break;
-		}
-	}
-	void SetNeighbors(const Tile& l, const Tile& r, const Tile& t, const Tile& b, const Tile& tL, const Tile& tR, const Tile& bL, const Tile& bR)
-	{
-		if (l.GetType() == type) maskNeighbors += lBit;
-		if (r.GetType() == type) maskNeighbors += rBit;
-		if (t.GetType() == type) maskNeighbors += tBit;
-		if (b.GetType() == type) maskNeighbors += bBit;
+		//if (type == Type::Undefined || !sprite) return;
 
-		if (((maskNeighbors & tBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && tL.GetType() == type && tR.GetType() == type) maskNeighbors = bWBit;
-		if (((maskNeighbors & bBit) && (maskNeighbors & lBit) && (maskNeighbors & rBit)) && bL.GetType() == type && bR.GetType() == type) maskNeighbors = tWBit;
-		if (((maskNeighbors & lBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tL.GetType() == type && bL.GetType() == type) maskNeighbors = rWBit;
-		if (((maskNeighbors & rBit) && (maskNeighbors & tBit) && (maskNeighbors & bBit)) && tR.GetType() == type && bR.GetType() == type) maskNeighbors = lWBit;
+		const int srcX = (tileIndex % nRowSprite) * GridUtils::tileSize;
+		const int srcY = (tileIndex / nRowSprite) * GridUtils::tileSize;
+
+		const RectI srcRect = { srcX, srcX + GridUtils::tileSize, srcY, srcY + GridUtils::tileSize };
+
+		gfx.DrawSprite(gridPos.x * size, gridPos.y * size, srcRect, *sprite, SpriteEffect::Copy{});
+	}
+	void SetTileIndex(const Tile& l, const Tile& r, const Tile& t, const Tile& b, const Tile& tL, const Tile& tR, const Tile& bL, const Tile& bR)
+	{
+		if (type != Type::Wall) {
+			tileIndex = 0;
+			return;
+		}
+
+		const bool L = (l.type == type);
+		const bool R = (r.type == type);
+		const bool T = (t.type == type);
+		const bool B = (b.type == type);
+		const bool TL = (tL.type == type);
+		const bool TR = (tR.type == type);
+		const bool BL = (bL.type == type);
+		const bool BR = (bR.type == type);
+
+		int mask = (L * lBit) | (R * rBit) | (T * tBit) | (B * bBit);
+
+		if (T && L && R && TL && TR) tileIndex = bWBit;
+		else if (B && L && R && BL && BR) tileIndex = tWBit;
+		else if (L && T && B && TL && BL) tileIndex = rWBit;
+		else if (R && T && B && TR && BR) tileIndex = lWBit;
+
+		else if (T && L && !R && TL) tileIndex = tLCBit;
+		else if (T && R && !L && TR) tileIndex = tRCBit;
+		else if (B && L && !R && BL) tileIndex = bLCBit;
+		else if (B && R && !L && BR) tileIndex = bRCBit;
+
+		else tileIndex = mask;
 	}
 public:
 	void SetType(Type type_in)
@@ -76,15 +88,22 @@ private:
 	Type type;
 	const Surface* sprite;
 	int nRowSprite;
-	int maskNeighbors = 0;
-	static constexpr int lBit = 1;
-	static constexpr int rBit = 2;
-	static constexpr int tBit = 4;
-	static constexpr int bBit = 8;
+	int tileIndex = 0;
+
+	static constexpr int lBit = 0b0001;
+	static constexpr int rBit = 0b0010;
+	static constexpr int tBit = 0b0100;
+	static constexpr int bBit = 0b1000;
+
 	static constexpr int lWBit = 16;
 	static constexpr int rWBit = 17;
 	static constexpr int tWBit = 18;
 	static constexpr int bWBit = 19;
+
+	static constexpr int tLCBit = 20;
+	static constexpr int tRCBit = 21;
+	static constexpr int bLCBit = 22;
+	static constexpr int bRCBit = 23;
 
 	static constexpr RectI rectSpriteTileFloor = { GridUtils::tileSize * 0, GridUtils::tileSize * 1, GridUtils::tileSize * 0, GridUtils::tileSize * 1 };
 };
