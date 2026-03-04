@@ -27,15 +27,22 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
+
 	playerController(&wnd.kbd, PlayerController::KeyboardControll::WSAD),
 	secondPlayerController(&wnd.kbd, PlayerController::KeyboardControll::ARROWS),
 	pacMan(maze, &playerController),
 
 	botController1(BotController::Behavior::Pursuit, &maze, &pacMan),
-	ghost1(Ghost::Identity::Blinky, maze,&secondPlayerController, &pacMan),
+	ghostBlinky(Ghost::Identity::Blinky, maze, &secondPlayerController /*&botController1*/, &pacMan),
 
-	botController2(BotController::Behavior::Wander, &maze, &pacMan),
-	ghost2(Ghost::Identity::Pinky, maze, &botController2, &pacMan)
+	botController2(BotController::Behavior::Pursuit, &maze, &pacMan),
+	ghostPinky(Ghost::Identity::Pinky, maze, &botController2, &pacMan),
+
+	botController3(BotController::Behavior::Wander, &maze, &pacMan),
+	ghostInky(Ghost::Identity::Inky, maze, &botController3, &pacMan),
+
+	botController4(BotController::Behavior::Wander, &maze, &pacMan),
+	ghostClyde(Ghost::Identity::Clyde, maze, &botController4, &pacMan)
 {
 	myMessageBox.SetButtons(MyMessageBox::Buttons::Ok);
 	myMessageBox.SetText("Error");
@@ -88,8 +95,10 @@ void Game::ProcessInput()
 	if (flagGameEnd == false)
 	{
 		pacMan.SetMoveDirection(maze);
-		ghost1.SetMoveDirection(maze);
-		ghost2.SetMoveDirection(maze);
+		ghostBlinky.SetMoveDirection(maze);
+		ghostPinky.SetMoveDirection(maze);
+		ghostInky.SetMoveDirection(maze);
+		ghostPinky.SetMoveDirection(maze);
 	}
 	///////////////////////////////////////
 	///////////////////////////////////////
@@ -121,8 +130,10 @@ void Game::UpdateModel(float dt)
 	if (flagGameEnd == false)
 	{
 		pacMan.Update(dt, maze);
-		ghost1.Update(dt, maze);
-		ghost2.Update(dt, maze);
+		ghostBlinky.Update(dt, maze);
+		ghostPinky.Update(dt, maze);
+		ghostInky.Update(dt, maze);
+		ghostClyde.Update(dt, maze);
 	}
 }
 
@@ -130,8 +141,10 @@ void Game::ComposeFrame()
 {
 	maze.Draw(gfx);
 	pacMan.Draw(gfx);
-	ghost1.Draw(gfx);
-	ghost2.Draw(gfx);
+	ghostBlinky.Draw(gfx);
+	ghostPinky.Draw(gfx);
+	ghostInky.Draw(gfx);
+	ghostClyde.Draw(gfx);
 
 	// Draw FPS
 	const std::string fpsText = "FPS: " + std::to_string(FPS);

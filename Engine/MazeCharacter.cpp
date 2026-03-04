@@ -21,8 +21,8 @@ MazeCharacter::MazeCharacter(const Maze& maze, Controller* pController, const Gr
 
 void MazeCharacter::Update(float dt, const Maze& maze)
 {
-	Character::SetDirection(DirectionUtils::MoveDirectionToVec2(curMoveDirection));
 	if (curMoveDirection == DirectionUtils::MoveDirection::None) return;
+	Character::SetDirection(DirectionUtils::MoveDirectionToVec2(curMoveDirection));
 
 	Character::Update(dt);
 

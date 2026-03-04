@@ -86,12 +86,21 @@ private:
 	/*  User Variables  */
 	bool flagGameEnd = false;
 	Maze maze;
+
 	PlayerController playerController;
 	PlayerController secondPlayerController;
 	PacMan pacMan;
-	Ghost ghost1;
+
 	BotController botController1;
-	Ghost ghost2;
+	Ghost ghostBlinky;
+
 	BotController botController2;
+	Ghost ghostPinky;
+
+	BotController botController3;
+	Ghost ghostInky;
+
+	BotController botController4;
+	Ghost ghostClyde;
 	/********************************/
 };

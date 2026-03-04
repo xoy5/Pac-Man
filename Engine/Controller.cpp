@@ -57,10 +57,10 @@ DirectionUtils::MoveDirection BotController::GetMoveDirection() const
 }
 DirectionUtils::MoveDirection BotController::GetRandomDirection() const
 {
-	return DirectionUtils::MoveDirection::Right;
+	return DirectionUtils::MoveDirection::None;
 }
 
 DirectionUtils::MoveDirection BotController::GetDirectionToTarget() const
 {
-	return DirectionUtils::MoveDirection::Right;
+	return DirectionUtils::MoveDirection::None;
 }

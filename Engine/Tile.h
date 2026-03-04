@@ -12,11 +12,12 @@ public:
 	{
 		Undefined,
 		Floor,
+		Dot,
+		PowerDot,
 		Wall,
 		Gate,
 		ConnectorL,
 		ConnectorR,
-		Dots,
 		PacManSpawn,
 		BlinkySpawn,
 		PinkySpawn,
@@ -30,26 +31,50 @@ public:
 		:
 		type(type),
 		sprite(sprite),
-		nRowSprite(sprite != nullptr ? (sprite->GetWidth() / GridUtils::tileSize) : 0)
+		nColSprite(sprite != nullptr ? (sprite->GetWidth() / GridUtils::tileSize) : 0)
 	{
+		switch (type)
+		{
+		case Type::Floor:
+		case Type::Undefined:
+		case Type::PacManSpawn:
+		case Type::BlinkySpawn:
+		case Type::PinkySpawn:
+		case Type::InkySpawn:
+		case Type::ClydeSpawn:
+		case Type::ConnectorL:
+		case Type::ConnectorR: 
+			tileIndex = idxFloor; 
+			break;
+		case Type::Dot:
+			tileIndex = idxDot;
+			break;
+		case Type::PowerDot:
+			tileIndex = idxPowerDot;
+			break;
+		case Type::Gate:
+			tileIndex = idxGate;
+			break;
+		case Type::Wall:
+			tileIndex = 0b1111; // L R T B
+			break;
+		}
 	}
 	void Draw(Graphics& gfx, const GridUtils::GridPos& gridPos, int size) const
 	{
-		//if (type == Type::Undefined || !sprite) return;
+		assert(sprite && "Tile has not got pointer to sprite.");
 
-		const int srcX = (tileIndex % nRowSprite) * GridUtils::tileSize;
-		const int srcY = (tileIndex / nRowSprite) * GridUtils::tileSize;
+		const int srcX = (tileIndex % nColSprite) * GridUtils::tileSize;
+		const int srcY = (tileIndex / nColSprite) * GridUtils::tileSize;
 
 		const RectI srcRect = { srcX, srcX + GridUtils::tileSize, srcY, srcY + GridUtils::tileSize };
 
 		gfx.DrawSprite(gridPos.x * size, gridPos.y * size, srcRect, *sprite, SpriteEffect::Copy{});
 	}
-	void SetTileIndex(const Tile& l, const Tile& r, const Tile& t, const Tile& b, const Tile& tL, const Tile& tR, const Tile& bL, const Tile& bR)
+	void SetTileWallIndex(const Tile& l, const Tile& r, const Tile& t, const Tile& b,
+		const Tile& tL, const Tile& tR, const Tile& bL, const Tile& bR)
 	{
-		if (type != Type::Wall) {
-			tileIndex = 0;
-			return;
-		}
+		if (type != Type::Wall) return;
 
 		const bool L = (l.type == type);
 		const bool R = (r.type == type);
@@ -60,50 +85,50 @@ public:
 		const bool BL = (bL.type == type);
 		const bool BR = (bR.type == type);
 
-		int mask = (L * lBit) | (R * rBit) | (T * tBit) | (B * bBit);
+		int neighborMask = (L ? maskL : 0) | (R ? maskR : 0) | (T ? maskT : 0) | (B ? maskB : 0);
 
-		if (T && L && R && TL && TR) tileIndex = bWBit;
-		else if (B && L && R && BL && BR) tileIndex = tWBit;
-		else if (L && T && B && TL && BL) tileIndex = rWBit;
-		else if (R && T && B && TR && BR) tileIndex = lWBit;
+		if (T && L && R && TL && TR)      tileIndex = idxWallB;
+		else if (B && L && R && BL && BR) tileIndex = idxWallT;
+		else if (L && T && B && TL && BL) tileIndex = idxWallR;
+		else if (R && T && B && TR && BR) tileIndex = idxWallL;
 
-		else if (T && L && !R && TL) tileIndex = tLCBit;
-		else if (T && R && !L && TR) tileIndex = tRCBit;
-		else if (B && L && !R && BL) tileIndex = bLCBit;
-		else if (B && R && !L && BR) tileIndex = bRCBit;
-
-		else tileIndex = mask;
+		else if (T && L && !R && TL)      tileIndex = idxCornerTL;
+		else if (T && R && !L && TR)      tileIndex = idxCornerTR;
+		else if (B && L && !R && BL)      tileIndex = idxCornerBL;
+		else if (B && R && !L && BR)      tileIndex = idxCornerBR;
+		else if (L && R && T && B && TL && TR && BL && BR) tileIndex = idxFloor;
+		else
+		{
+			tileIndex = neighborMask;
+		}
 	}
+
 public:
-	void SetType(Type type_in)
-	{
-		type = type_in;
-	}
-	Type GetType() const
-	{
-		return type;
-	}
+	void SetType(Type type_in) { type = type_in; }
+	Type GetType() const { return type; }
 
 private:
-	Type type;
-	const Surface* sprite;
-	int nRowSprite;
+	Type type = Type::Undefined;
+	const Surface* sprite = nullptr;
+	int nColSprite = 0;
 	int tileIndex = 0;
 
-	static constexpr int lBit = 0b0001;
-	static constexpr int rBit = 0b0010;
-	static constexpr int tBit = 0b0100;
-	static constexpr int bBit = 0b1000;
+	static constexpr int maskL = 0b0001; // 1
+	static constexpr int maskR = 0b0010; // 2
+	static constexpr int maskT = 0b0100; // 4
+	static constexpr int maskB = 0b1000; // 8
 
-	static constexpr int lWBit = 16;
-	static constexpr int rWBit = 17;
-	static constexpr int tWBit = 18;
-	static constexpr int bWBit = 19;
+	static constexpr int idxFloor = 0;
+	static constexpr int idxWallL = 16;
+	static constexpr int idxWallR = 17;
+	static constexpr int idxWallT = 18;
+	static constexpr int idxWallB = 19;
+	static constexpr int idxCornerTL = 20;
+	static constexpr int idxCornerTR = 21;
+	static constexpr int idxCornerBL = 22;
+	static constexpr int idxCornerBR = 23;
 
-	static constexpr int tLCBit = 20;
-	static constexpr int tRCBit = 21;
-	static constexpr int bLCBit = 22;
-	static constexpr int bRCBit = 23;
-
-	static constexpr RectI rectSpriteTileFloor = { GridUtils::tileSize * 0, GridUtils::tileSize * 1, GridUtils::tileSize * 0, GridUtils::tileSize * 1 };
+	static constexpr int idxDot = 24;
+	static constexpr int idxPowerDot = 25;
+	static constexpr int idxGate = 26;
 };

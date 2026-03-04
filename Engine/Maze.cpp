@@ -99,11 +99,17 @@ void Maze::SetupTiles()
 		case 'F':
 			tiles[i] = Tile{ Tile::Type::Floor, &spriteTiles };
 			break;
-		case 'W':
-			tiles[i] = Tile{ Tile::Type::Wall, &spriteTiles };
+		case 'D':
+			tiles[i] = Tile{ Tile::Type::Dot, &spriteTiles };
+			break;
+		case 'X':
+			tiles[i] = Tile{ Tile::Type::PowerDot, &spriteTiles };
 			break;
 		case 'G':
 			tiles[i] = Tile{ Tile::Type::Gate, &spriteTiles };
+			break;
+		case 'W':
+			tiles[i] = Tile{ Tile::Type::Wall, &spriteTiles };
 			break;
 		case 'L':
 			tiles[i] = Tile{ Tile::Type::ConnectorL, &spriteTiles };
@@ -137,7 +143,7 @@ void Maze::SetupTiles()
 		GridUtils::GridPos gridPos = GetGridPos(i);
 		GridUtils::GridPos gridPosUp = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Up);
 		GridUtils::GridPos gridPosDown = GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Down);
-		tiles[i].SetTileIndex(
+		tiles[i].SetTileWallIndex(
 			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Left)),
 			GetTileAt(GridUtils::GetGridPosBasedOnMoveDirection(gridPos, DirectionUtils::MoveDirection::Right)),
 			GetTileAt(gridPosUp),
