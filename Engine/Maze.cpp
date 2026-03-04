@@ -164,7 +164,29 @@ Tile Maze::GetTileAt(GridUtils::GridPos gridPos) const
 	return tiles[gridPos.y * nTilesX + gridPos.x];
 }
 
+Tile& Maze::GetTileAt(GridUtils::GridPos gridPos)
+{
+	if (!(gridPos.x >= 0 && gridPos.x < nTilesX && gridPos.y >= 0 && gridPos.y < nTilesY))
+		return Tile(Tile::Type::Undefined, nullptr);
+
+	return tiles[gridPos.y * nTilesX + gridPos.x];
+}
+
 void Maze::SetTileAt(GridUtils::GridPos gridPos, Tile tile)
 {
 	tiles[gridPos.y * nTilesX + gridPos.x] = tile;
+}
+
+Tile::Type Maze::ConsumeDotAt(GridUtils::GridPos gridPos)
+{
+	Tile& t = GetTileAt(gridPos);
+	const Tile::Type tType = t.GetType();
+	switch (tType)
+	{
+	case Tile::Type::PowerDot:
+	case Tile::Type::Dot:
+		t.SetTypeAndBasicIdx(Tile::Type::Floor);
+	}
+
+	return tType;
 }

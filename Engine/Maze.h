@@ -25,11 +25,13 @@ public:
 	GridUtils::GridPos GetPacManSpawnPointGridPos() const;
 	GridUtils::GridPos GetGhostSpawnPointGridPos(Ghost::Identity identity) const;
 	int GetNumberOfTilesY() const;
-	Tile GetTileAt(GridUtils::GridPos gridPos) const;
-	void SetTileAt(GridUtils::GridPos gridPos, Tile tile);
+	Tile::Type ConsumeDotAt(GridUtils::GridPos gridPos);
 
 private:
 	void SetupTiles();
+	Tile GetTileAt(GridUtils::GridPos gridPos) const;
+	Tile& GetTileAt(GridUtils::GridPos gridPos);
+	void SetTileAt(GridUtils::GridPos gridPos, Tile tile);
 
 private:
 	static constexpr int tileSize = GridUtils::tileSize;

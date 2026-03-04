@@ -19,7 +19,7 @@ MazeCharacter::MazeCharacter(const Maze& maze, Controller* pController, const Gr
 	Character::SetStandingDirection(DirectionUtils::MoveDirectionToVec2(DirectionUtils::MoveDirection::Up));
 }
 
-void MazeCharacter::Update(float dt, const Maze& maze)
+void MazeCharacter::Update(float dt, Maze& maze)
 {
 	if (curMoveDirection == DirectionUtils::MoveDirection::None) return;
 	Character::SetDirection(DirectionUtils::MoveDirectionToVec2(curMoveDirection));
@@ -30,6 +30,7 @@ void MazeCharacter::Update(float dt, const Maze& maze)
 	{
 		gridPos = GetNextGridPos();
 		SnapToGrid(maze);
+		OnGridPositionChanged(maze);
 		ContinueMoveDirection(maze);
 	}
 }
@@ -66,6 +67,10 @@ GridUtils::GridPos MazeCharacter::GetNextGridPos() const
 void MazeCharacter::SnapToGrid(const Maze& maze)
 {
 	SetPos(maze.GetPosOfTileAt(gridPos));
+}
+
+void MazeCharacter::OnGridPositionChanged(Maze& maze)
+{
 }
 
 bool MazeCharacter::IsMovedToNextGridPos(const Maze& maze) const

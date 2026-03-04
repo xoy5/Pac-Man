@@ -6,6 +6,12 @@ PacMan::PacMan(const Maze& maze, Controller* pController)
 {
 }
 
+void PacMan::Update(float dt, Maze& maze)
+{
+	powerMode.Update(dt);
+	MazeCharacter::Update(dt, maze);
+}
+
 void PacMan::SetMoveDirection(const Maze& maze)
 {
 	{
@@ -40,4 +46,21 @@ void PacMan::ContinueMoveDirection(const Maze& maze)
 		curMoveDirection = DirectionUtils::MoveDirection::None;
 		nextMoveDirection = DirectionUtils::MoveDirection::None;
 	}
+}
+
+void PacMan::OnGridPositionChanged(Maze& maze)
+{
+	switch (maze.ConsumeDotAt(gridPos))
+	{
+		case Tile::Type::PowerDot:
+			powerMode.Activate();
+			break;
+		case Tile::Type::Dot:
+			break;
+	}
+}
+
+bool PacMan::IsPowerModeActive() const
+{
+	return powerMode.isActive;
 }

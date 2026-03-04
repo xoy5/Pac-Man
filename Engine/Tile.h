@@ -29,36 +29,10 @@ public:
 	Tile() = default;
 	Tile(Type type, const Surface* sprite)
 		:
-		type(type),
 		sprite(sprite),
 		nColSprite(sprite != nullptr ? (sprite->GetWidth() / GridUtils::tileSize) : 0)
 	{
-		switch (type)
-		{
-		case Type::Floor:
-		case Type::Undefined:
-		case Type::PacManSpawn:
-		case Type::BlinkySpawn:
-		case Type::PinkySpawn:
-		case Type::InkySpawn:
-		case Type::ClydeSpawn:
-		case Type::ConnectorL:
-		case Type::ConnectorR: 
-			tileIndex = idxFloor; 
-			break;
-		case Type::Dot:
-			tileIndex = idxDot;
-			break;
-		case Type::PowerDot:
-			tileIndex = idxPowerDot;
-			break;
-		case Type::Gate:
-			tileIndex = idxGate;
-			break;
-		case Type::Wall:
-			tileIndex = 0b1111; // L R T B
-			break;
-		}
+		SetTypeAndBasicIdx(type);
 	}
 	void Draw(Graphics& gfx, const GridUtils::GridPos& gridPos, int size) const
 	{
@@ -104,7 +78,36 @@ public:
 	}
 
 public:
-	void SetType(Type type_in) { type = type_in; }
+	void SetTypeAndBasicIdx(Type type_in) 
+	{ 
+		type = type_in;
+		switch (type)
+		{
+		case Type::Floor:
+		case Type::Undefined:
+		case Type::PacManSpawn:
+		case Type::BlinkySpawn:
+		case Type::PinkySpawn:
+		case Type::InkySpawn:
+		case Type::ClydeSpawn:
+		case Type::ConnectorL:
+		case Type::ConnectorR:
+			tileIndex = idxFloor;
+			break;
+		case Type::Dot:
+			tileIndex = idxDot;
+			break;
+		case Type::PowerDot:
+			tileIndex = idxPowerDot;
+			break;
+		case Type::Gate:
+			tileIndex = idxGate;
+			break;
+		case Type::Wall:
+			tileIndex = 0b1111; // L R T B
+			break;
+		}
+	}
 	Type GetType() const { return type; }
 
 private:
